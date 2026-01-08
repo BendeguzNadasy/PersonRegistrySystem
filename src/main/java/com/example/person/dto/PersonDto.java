@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@Schema(description = "Személy létrehozására szolgáló adatszerkezet (ID nélkül)")
+@Schema(description = "Személy létrehozására szolgáló séma")
 public class PersonDto {
 
     @Schema(description = "A személy teljes neve", example = "John Doe")

@@ -4,6 +4,7 @@ import com.example.person.dto.PersonDto;
 import com.example.person.entity.Person;
 import com.example.person.service.PersonService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -46,5 +47,21 @@ public class PersonController {
     public ResponseEntity<Void> deletePerson(@PathVariable Long id) {
         personService.deletePerson(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Személy módosítása", description = "Meglévő személy adatainak felülírása. A megadott címek felülírják a régieket!")
+    public ResponseEntity<?> updatePerson(
+            @Parameter(description = "A módosítandó személy id-ja", example = "1")
+            @PathVariable Long id,
+
+            @RequestBody PersonDto personDto) {
+
+        try {
+            Person updatedPerson = personService.updatePerson(id, personDto);
+            return ResponseEntity.ok(updatedPerson);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

@@ -7,6 +7,8 @@ import com.example.person.entity.Person;
 import com.example.person.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,18 +52,48 @@ public class PersonService {
         personRepository.deleteById(id);
     }
 
-    public Person toEntity(PersonDto dto) {
+    @Transactional
+    public Person updatePerson(Long id, PersonDto personDto) {
+        Person existingPerson = personRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("A személy nem található: " + id));
+
+        existingPerson.setName(personDto.getName());
+
+        if (personDto.getAddresses() != null && personDto.getAddresses().size() > 2) {
+            throw new IllegalArgumentException("Frissítéskor is maximum 2 címe lehet!");
+        }
+
+        existingPerson.getAddresses().clear();
+        personRepository.saveAndFlush(existingPerson);
+
+        Person tempPerson = toEntity(personDto);
+
+        if (tempPerson.getAddresses() != null) {
+            for (Address newAddress : tempPerson.getAddresses()) {
+                newAddress.setPerson(existingPerson);
+                existingPerson.getAddresses().add(newAddress);
+            }
+        }
+
+        return personRepository.save(existingPerson);
+    }
+
+    private Person toEntity(PersonDto dto) {
         Person person = new Person();
         person.setName(dto.getName());
 
         if (dto.getAddresses() != null) {
-            List<Address> addresses = dto.getAddresses().stream().map(addrDto -> {
+            List<Address> addresses = dto.getAddresses().stream().map(addressDto -> {
                 Address address = new Address();
-                address.setType(addrDto.getType());
+                address.setType(addressDto.getType());
+                address.setZipCode(addressDto.getZipCode());
+                address.setCity(addressDto.getCity());
+                address.setStreet(addressDto.getStreet());
+                address.setHouseNumber(addressDto.getHouseNumber());
                 address.setPerson(person);
 
-                if (addrDto.getContacts() != null) {
-                    List<Contact> contacts = addrDto.getContacts().stream().map(contDto -> {
+                if (addressDto.getContacts() != null) {
+                    List<Contact> contacts = addressDto.getContacts().stream().map(contDto -> {
                         Contact contact = new Contact();
                         contact.setValue(contDto.getValue());
                         contact.setType(contDto.getType());
