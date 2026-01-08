@@ -15,7 +15,10 @@ public class OpenApiConfig {
                 .info(new Info()
                         .title("Személy Nyilvántartó Rendszer API")
                         .version("1.0.0")
-                        .description("")
+                        .description("Ez egy személyeket nyilvántartó, karbantartó Spring Boot alkalmazást.\n" +
+                                "A projekthez tartozó adatbázis tartalmaz 3 táblát: személyek, címek, elérhetőségek. " +
+                                "Egy személynek maximum kettő címe lehet (állandó, ideiglenes), " +
+                                "egy címhez több elérhetőség (email, telefon, stb.) tartozhat.")
                         .contact(new Contact()
                                 .name("Nádasy Bendegúz")
                                 .email("nadasy.bendeguz@gmail.com")
