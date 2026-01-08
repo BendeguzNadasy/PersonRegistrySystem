@@ -3,6 +3,7 @@ package com.example.person.dto;
 import com.example.person.entity.AddressType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
 import java.util.List;
 
 @Data
