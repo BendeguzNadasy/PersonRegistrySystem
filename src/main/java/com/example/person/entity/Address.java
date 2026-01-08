@@ -1,5 +1,6 @@
 package com.example.person.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +26,7 @@ public class Address {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "person_id", nullable = false)
+    @JsonIgnore
     private Person person;
 
     @OneToMany(mappedBy = "address", cascade = CascadeType.ALL, orphanRemoval = true)
