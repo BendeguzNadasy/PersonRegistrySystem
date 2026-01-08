@@ -18,9 +18,9 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -30,13 +30,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class PersonControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
     @Autowired
     private MockMvc mockMvc;
 
     @Test
     void createPerson_Successful() throws Exception {
         PersonDto personDto = new PersonDto();
-        personDto.setName("Teszt Elek");
+        personDto.setName("Elment Elemér");
 
         AddressDto address = new AddressDto();
         address.setZipCode("1234");
@@ -51,14 +52,14 @@ class PersonControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(personDto)))
                 .andExpect(status().isOk()) // 200 OK
-                .andExpect(jsonPath("$.name", is("Teszt Elek"))) // name matches
+                .andExpect(jsonPath("$.name", is("Elment Elemér"))) // name matches
                 .andExpect(jsonPath("$.addresses", hasSize(1))); // only one address
     }
 
     @Test
     void createPerson_TooManyAddresses_ShouldFail() throws Exception {
         PersonDto personDto = new PersonDto();
-        personDto.setName("Toomanyaddress Tamás");
+        personDto.setName("Sokcím Tamás");
 
         List<AddressDto> addresses = new ArrayList<>();
         addresses.add(createAddress("Pécs", AddressType.PERMANENT));
@@ -70,7 +71,7 @@ class PersonControllerTest {
         mockMvc.perform(post("/api/persons")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(personDto)))
-                .andExpect(status().isBadRequest()); // throw 400 Bad Request-et due too many address
+                .andExpect(status().isBadRequest()); // throw 400 bad request due too many address
     }
 
     @Test
