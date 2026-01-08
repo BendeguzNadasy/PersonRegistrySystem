@@ -1,5 +1,7 @@
 package com.example.person.service;
 
+import com.example.person.dto.AddressDto;
+import com.example.person.dto.ContactDto;
 import com.example.person.dto.PersonDto;
 import com.example.person.entity.Address;
 import com.example.person.entity.Contact;
@@ -24,6 +26,13 @@ public class PersonService {
 
     public List<Person> getAllPersons() {
         return personRepository.findAll();
+    }
+
+    public PersonDto getPersonById(Long id) {
+        Person person = personRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("A személy nem található ezzel az ID-val: " + id));
+
+        return toDto(person);
     }
 
     /**
@@ -107,5 +116,34 @@ public class PersonService {
             person.setAddresses(addresses);
         }
         return person;
+    }
+
+    private PersonDto toDto(Person person) {
+        PersonDto dto = new PersonDto();
+        dto.setName(person.getName());
+
+        if (person.getAddresses() != null) {
+            List<AddressDto> addressDtos = person.getAddresses().stream().map(address -> {
+                AddressDto addrDto = new AddressDto();
+                addrDto.setZipCode(address.getZipCode());
+                addrDto.setCity(address.getCity());
+                addrDto.setStreet(address.getStreet());
+                addrDto.setHouseNumber(address.getHouseNumber());
+                addrDto.setType(address.getType());
+
+                if (address.getContacts() != null) {
+                    List<ContactDto> contactDtos = address.getContacts().stream().map(contact -> {
+                        ContactDto contactDto = new ContactDto();
+                        contactDto.setValue(contact.getValue());
+                        contactDto.setType(contact.getType());
+                        return contactDto;
+                    }).collect(Collectors.toList());
+                    addrDto.setContacts(contactDtos);
+                }
+                return addrDto;
+            }).collect(Collectors.toList());
+            dto.setAddresses(addressDtos);
+        }
+        return dto;
     }
 }

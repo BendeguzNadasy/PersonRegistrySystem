@@ -30,6 +30,23 @@ public class PersonController {
         return personService.getAllPersons();
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "Egy adott személy lekérdezése", description = "ID alapján visszaadja a személy részletes adatait.")
+    public ResponseEntity<?> getPersonById(
+            @Parameter(description = "A keresett személy ID-ja", example = "1")
+            @PathVariable Long id) {
+
+        try {
+            PersonDto personDto = personService.getPersonById(id);
+
+            return ResponseEntity.ok(personDto);
+
+        } catch (RuntimeException e) {
+            // Ha nincs ilyen ID, 404 Not Found-ot küldünk
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
+
     @PostMapping
     @Operation(summary = "Új személy rögzítése", description = "Létrehoz egy új személyt. Figyelem: maximum 2 cím adható meg!")
     public ResponseEntity<?> createPerson(@RequestBody() PersonDto personDto) {
