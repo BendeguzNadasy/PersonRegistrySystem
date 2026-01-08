@@ -49,7 +49,6 @@ public class PersonController {
             return ResponseEntity.ok(personDto);
 
         } catch (RuntimeException e) {
-            // Ha nincs ilyen ID, 404 Not Found-ot küldünk
             return ResponseEntity.status(404).body(e.getMessage());
         }
     }

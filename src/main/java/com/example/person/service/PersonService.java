@@ -42,12 +42,21 @@ public class PersonService {
      */
     public Person savePerson(PersonDto personDto) {
         Person person = toEntity(personDto);
-        if (person.getAddresses() != null && person.getAddresses().size() > 2) {
-            throw new IllegalArgumentException("Egy személynek maximum 2 címe lehet!");
-        }
+        List<Address> addresses = person.getAddresses();
+        if (addresses != null) {
+            if (addresses.size() > 2) {
+                throw new IllegalArgumentException("Egy személynek maximum 2 címe lehet!");
+            }
+            long uniqueTypesCount = addresses.stream()
+                    .map(Address::getType)
+                    .distinct()
+                    .count();
 
-        if (person.getAddresses() != null) {
-            person.getAddresses().forEach(address -> {
+            if (uniqueTypesCount < addresses.size()) {
+                throw new IllegalArgumentException("Egy személynek nem lehet két ugyanolyan típusú címe!");
+            }
+
+            addresses.forEach(address -> {
                 address.setPerson(person);
                 if (address.getContacts() != null) {
                     address.getContacts().forEach(contact -> contact.setAddress(address));

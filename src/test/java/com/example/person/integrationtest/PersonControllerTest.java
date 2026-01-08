@@ -67,7 +67,6 @@ class PersonControllerTest {
         addresses.add(createAddress("Sopron", AddressType.TEMPORARY));
         personDto.setAddresses(addresses);
 
-        // WHEN & THEN
         mockMvc.perform(post("/api/persons")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(personDto)))
